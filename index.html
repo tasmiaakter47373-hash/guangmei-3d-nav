@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="description" content="富力海珠城 A/B 区概念模型，骑手观察视角原型。非测绘模型，不是真实导航。" />
+  <title>富力海珠城 · 骑手观察原型</title>
+  <script type="module" crossorigin src="./assets/index-D-HErJws.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-CDQZ3kn_.css">
+</head>
+<body>
+  <div id="stage">
+    <div id="canvas-host"></div>
+    <div id="model-labels" aria-hidden="true"></div>
+
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">↗</span>
+        <div>
+          <p class="eyebrow">R&amp;F ICON · RIDER VIEW</p>
+          <h1>富力海珠城 <span>/ 空间观察</span></h1>
+        </div>
+      </div>
+      <div class="top-actions">
+        <span class="round-tag">第 4 轮 · 两点校准</span>
+        <button id="sources-open" class="text-btn" type="button">资料与边界</button>
+      </div>
+    </header>
+
+    <div id="loading">正在搭建空间…</div>
+    <div id="error" role="alert" hidden>
+      当前浏览器无法启动三维视图。请使用支持 WebGL 的新版 Chrome 或 Edge。
+    </div>
+
+    <aside class="panel" aria-label="模型控制">
+      <p class="eyebrow">EXPLODE / 楼层展开</p>
+      <div class="panel-row">
+        <label for="explode">分离程度</label>
+        <output id="explode-value" for="explode">55%</output>
+      </div>
+      <input id="explode" type="range" min="0" max="100" step="1" value="55"
+        aria-label="楼层展开程度，0 为基准合拢，100 为最大分离" />
+      <div class="range-labels"><span>0 · 基准合拢</span><span>100 · 最大分离</span></div>
+      <button id="reset" class="reset-btn" type="button">↺ 复位视角</button>
+      <p class="hint">拖动旋转 · 滚轮 / 双指缩放<br />近水平至顶部观察，不可从模型底部观察</p>
+    </aside>
+
+    <p class="disclaimer">
+      A/B 体块、层高、连廊落点、店铺、停车点与路线均为公开资料及小组观察启发的
+      <strong>示意模型</strong>，不是测绘或真实导航。
+    </p>
+
+    <dialog id="sources">
+      <div class="dialog-top">
+        <p class="eyebrow">RESEARCH NOTES</p>
+        <button id="sources-close" type="button" aria-label="关闭资料说明">✕</button>
+      </div>
+      <h2>哪些是资料，哪些是示意。</h2>
+      <p>本原型用于解释 A/B 区与连廊的连接关系，不用于现场寻路。建筑体块、层高、轮廓、连廊落点、内部店铺、停车点和取餐路线均经过简化或为创作情境。</p>
+      <h3>资料依据</h3>
+      <ul>
+        <li><a href="https://www.rfchina.com/product.aspx?pid=817&amp;type=17" target="_blank" rel="noopener">富力集团官方项目页 ↗</a>：A/B 区双连廊购物中心的总体关系。</li>
+        <li><a href="https://www.sohu.com/a/964001290_121117451" target="_blank" rel="noopener">2025 年商场攻略转载 ↗</a>：A 区地上六层、B 区地上八层及 L3/L5 连廊。属于二手资料，现状待核。</li>
+        <li>小组第一阶段实地调研：停车区、连廊、直梯与导视观察。</li>
+      </ul>
+      <h3>当前简化范围</h3>
+      <p>只表现地上商业楼层。地下空间和办公塔楼暂未建模；省略它们不代表实际不存在。建筑左右位置为便于阅读的构图，不作为精确方位依据。</p>
+      <h3>还需要现场核对</h3>
+      <p>各层平面、电梯停靠、骑手允许使用的出入口、连廊两端位置与通行状态。跨层路径中的竖线是图解连接，不是新增的道路或电梯设施。</p>
+      <p class="dialog-foot">原型 v0.1 · 第四轮：两点校准与分层手势控制 · 资料检索于 2026.10.16</p>
+    </dialog>
+  </div>
+
+  <section id="order-hud" class="order-hud" data-demo-state="idle" aria-label="演示订单信息">
+    <div class="hud-head">
+      <span class="hud-badge">演示订单 · 非真实导航</span>
+    </div>
+
+    <p class="hud-destination">目的地：B区L3示意取餐柜台</p>
+
+    <div class="hud-clocks">
+      <div class="hud-clock">
+        <span class="hud-clock-label">距预计取餐</span>
+        <strong class="hud-clock-value" id="pickup-countdown">08:00</strong>
+        <span class="hud-clock-status" id="pickup-status">未开始</span>
+      </div>
+      <span class="hud-rule" aria-hidden="true"></span>
+      <div class="hud-clock">
+        <span class="hud-clock-label">距送达截止</span>
+        <strong class="hud-clock-value" id="delivery-countdown">25:00</strong>
+        <span class="hud-clock-status" id="delivery-status">未开始</span>
+      </div>
+    </div>
+
+    <div class="hud-actions">
+      <button id="demo-start" class="hud-btn hud-btn-primary" type="button">开始演示</button>
+      <button id="demo-reset" class="hud-btn" type="button" disabled>重置演示</button>
+    </div>
+
+    <p class="hud-note">演示值：8 分钟预计取餐 / 25 分钟送达截止</p>
+  </section>
+
+  <details id="gesture-panel" class="gesture-panel">
+    <summary>
+      <span class="gesture-title">手势控制</span>
+      <span id="gesture-summary">未启用</span>
+    </summary>
+    <div class="gesture-body">
+      <div class="gesture-preview">
+        <video id="gesture-video" playsinline autoplay muted></video>
+        <canvas id="gesture-overlay"></canvas>
+        <span id="gesture-preview-note">摄像头未开启</span>
+      </div>
+
+      <div class="gesture-actions gesture-toggle-row">
+        <button id="gesture-toggle" type="button">启用手势</button>
+      </div>
+
+      <div class="gesture-actions gesture-record-row">
+        <button id="gesture-record-closed" type="button" disabled>记录合拢手势</button>
+        <button id="gesture-record-open" type="button" disabled>记录展开手势</button>
+      </div>
+
+      <p id="gesture-status" class="gesture-status" role="status">未启用</p>
+
+      <div class="gesture-calibration-readout">
+        <span>rClosed <b id="gesture-r-closed">—</b></span>
+        <span>rOpen <b id="gesture-r-open">—</b></span>
+      </div>
+
+      <div class="gesture-readout">
+        <span>间距比 <b id="gesture-ratio">—</b></span>
+        <span>展开 <b id="gesture-value">—</b></span>
+      </div>
+
+      <p class="gesture-note">
+        识别：MediaPipe Hand Landmarker（Apache-2.0）。只使用拇指尖（4）与食指尖（8）的连续距离，不控制相机。先记录合拢，再记录展开；每次保持约 0.5 秒。校准完成前不改变楼层，关闭手势后滑杆恢复。
+      </p>
+      <p id="gesture-error" class="gesture-error" hidden></p>
+    </div>
+  </details>
+
+</body>
+</html>
